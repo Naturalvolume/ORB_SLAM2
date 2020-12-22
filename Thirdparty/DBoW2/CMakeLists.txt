@@ -24,7 +24,10 @@ set(SRCS_DUTILS
   DUtils/Random.cpp
   DUtils/Timestamp.cpp)
 
-find_package(OpenCV 3.0 QUIET)
+set(OpenCV_DIR /opt/ros/kinetic/share/OpenCV-3.3.1-dev)
+set(OpenCV_FOUND 1)
+find_package(OpenCV REQUIRED)
+# find_package(OpenCV 3.0 QUIET)
 if(NOT OpenCV_FOUND)
    find_package(OpenCV 2.4.3 QUIET)
    if(NOT OpenCV_FOUND)
