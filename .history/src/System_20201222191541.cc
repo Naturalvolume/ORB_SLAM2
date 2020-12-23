@@ -73,17 +73,13 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cout << "Vocabulary loaded!" << endl << endl;
 
     //Create KeyFrame Database
-    // 创建关键帧数据库
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
     //Create the Map
-    // 创建地图
     mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
-    // 创建视图
     mpFrameDrawer = new FrameDrawer(mpMap);
-    // 创建画图器
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     //Initialize the Tracking thread
@@ -229,31 +225,23 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp, const
     }
 
     // Check mode change
-    // 操作局部地图线程
     {
-        // 独占锁，主要是为了mbActivateLocalizationMode和mbDeactivateLocalizationMode
-        // 不会发生混乱，没有死锁或在临界区
         unique_lock<mutex> lock(mMutexMode);
-        if(mbActivateLocalizationMode)// 是否停止局部地图线程，默认值是false，建图
+        if(mbActivateLocalizationMode)
         {
             mpLocalMapper->RequestStop();
 
             // Wait until Local Mapping has effectively stopped
-            // 延时直到局部地图线程关闭
             while(!mpLocalMapper->isStopped())
             {
                 usleep(1000);
             }
-            // 局部地图关闭后，只进行追踪，计算相机位姿，不更新局部地图
+
             mpTracker->InformOnlyTracking(true);
-            // 执行完当前部分之后把标志位重置
-            // ??????? 这里把建图线程关闭部分是没有新的关键帧和点云时
-            // 关闭该线程可以让别的线程得到更多资源
             mbActivateLocalizationMode = false;
         }
-        if(mbDeactivateLocalizationMode)// 判断是否清空局部地图
+        if(mbDeactivateLocalizationMode)
         {
-            // 局部地图线程被释放，关键帧从地图中删除
             mpTracker->InformOnlyTracking(false);
             mpLocalMapper->Release();
             mbDeactivateLocalizationMode = false;
@@ -261,23 +249,15 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp, const
     }
 
     // Check reset
-    // 检查是否需要进行复位重置
     {
-        // 给mbReset标志位加锁，防止被别的线程修改
     unique_lock<mutex> lock(mMutexReset);
     if(mbReset)
     {
-        // 若要被重置
-        // mpViwer暂停，视图停止更新
-        // 局部地图和闭环检测线程停止
-        // Bow:mpKeyFrameDatabase和mpMap被清空
-        // 释放所有资源
         mpTracker->Reset();
         mbReset = false;
     }
     }
-    // 上面的部分是对各个线程状态的反馈，可看作是对上一个状态的反馈
-    // GrabImageMonocular　是最重要的部分，获取数据，对各个线程的数据进行更新，重新计算地图
+
     cv::Mat Tcw = mpTracker->GrabImageMonocular(im,timestamp, imSem);
 
     unique_lock<mutex> lock2(mMutexState);

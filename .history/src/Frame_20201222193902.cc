@@ -177,11 +177,9 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
      mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth)
 {
     // Frame ID
-    // 当前帧的id，每一帧都有这个特殊标识
     mnId=nNextId++;
 
     // Scale Level Info
-    // 获取尺度信息
     mnScaleLevels = mpORBextractorLeft->GetLevels();
     mfScaleFactor = mpORBextractorLeft->GetScaleFactor();
     mfLogScaleFactor = log(mfScaleFactor);
@@ -199,27 +197,24 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
 
     if(mvKeys.empty())
         return;
-    // 进行畸变校正，找到关键点实际应该在普通摄像头中的位置
+
     UndistortKeyPoints();
 
     // Set no stereo information
-    // ???? 为什么？把立体信息部分设置为－1
     mvuRight = vector<float>(N,-1);
     mvDepth = vector<float>(N,-1);
-    // 初始化点和各个点是否是外点状态
+
     mvpMapPoints = vector<MapPoint*>(N,static_cast<MapPoint*>(NULL));
     mvbOutlier = vector<bool>(N,false);
 
     // This is done only for the first Frame (or after a change in the calibration)
-    // 第一帧或标定矩阵发生变化后，计算基础矩阵
     if(mbInitialComputations)
     {
-        // 计算畸变校正后的边界
         ComputeImageBounds(imGray);
-        //　mnMaxX　mnMinX　是畸变校正后的边界
+
         mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/static_cast<float>(mnMaxX-mnMinX);
         mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/static_cast<float>(mnMaxY-mnMinY);
-        // 从配置文件中读取数据赋值给相应元素
+
         fx = K.at<float>(0,0);
         fy = K.at<float>(1,1);
         cx = K.at<float>(0,2);
@@ -229,11 +224,9 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
 
         mbInitialComputations=false;
     }
-    // 计算立体匹配的baseline
-    // mbf是传进来的配置文件参数
+
     mb = mbf/fx;
-    // 把每一帧分割成48＊64个网格
-    // 根据关键点的畸变校正后的位置，分布在不同的网格中
+
     AssignFeaturesToGrid();
 }
 

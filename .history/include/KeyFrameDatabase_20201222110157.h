@@ -42,35 +42,30 @@ class Frame;
 class KeyFrameDatabase
 {
 public:
-    // 初始化关键帧仓库
+
     KeyFrameDatabase(const ORBVocabulary &voc);
-    // 添加
+
    void add(KeyFrame* pKF);
-  // 删除关键帧
+
    void erase(KeyFrame* pKF);
-  // 清除关键帧
+
    void clear();
 
    // Loop Detection
-  //  闭环检测
    std::vector<KeyFrame *> DetectLoopCandidates(KeyFrame* pKF, float minScore);
 
    // Relocalization
-  //  跟踪失败后重定位
    std::vector<KeyFrame*> DetectRelocalizationCandidates(Frame* F);
 
 protected:
 
   // Associated vocabulary
-  // 所需字典
   const ORBVocabulary* mpVoc;
 
   // Inverted file
-  // 存储关键帧
   std::vector<list<KeyFrame*> > mvInvertedFile;
 
   // Mutex
-  // 多线程
   std::mutex mMutex;
 };
 

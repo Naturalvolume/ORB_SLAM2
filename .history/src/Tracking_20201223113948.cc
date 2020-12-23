@@ -235,6 +235,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
     return mCurrentFrame.mTcw.clone();
 }
 
+// TODO: This only erase the pointer.
 cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp, const cv::Mat &imSem)
 {
     mImGray = im;

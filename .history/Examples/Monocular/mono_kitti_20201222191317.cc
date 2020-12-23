@@ -75,7 +75,6 @@ int main(int argc, char **argv)
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
 
     // Vector for tracking time statistics
-    // 存储每一帧追踪所需的时间
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
 
@@ -97,15 +96,16 @@ int main(int argc, char **argv)
             return 1;
         }
 
+        // 12.21
+        cv::Mat imSem(im.rows, im.cols, CV_32SC1);
+        LoadMask(vstrSemanticFile[ni], imSem);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
-        // 12.21
-        cv::Mat imSem(im.rows, im.cols, CV_32SC1);
-        LoadMask(vstrSemanticFile[ni], imSem);
+
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe, imSem);
 
@@ -116,29 +116,24 @@ int main(int argc, char **argv)
 #endif
 
         double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
-        // 计算追踪该图片花的时间
+
         vTimesTrack[ni]=ttrack;
 
         // Wait to load the next frame
-        // 计算下一帧图片的时间戳与当前时间戳的差值T,与追踪所需时间进行比较　tframe = vTimestamps[ni];
         double T=0;
         if(ni<nImages-1)
             T = vTimestamps[ni+1]-tframe;
         else if(ni>0)
             T = tframe-vTimestamps[ni-1];
-        // 如果有必要，停止当前线程
-        // 模拟时间情况，因为追踪结束后下一帧可能还没来
+
         if(ttrack<T)
             usleep((T-ttrack)*1e6);
     }
 
     // Stop all threads
-    // 追踪完所有图片，关闭线程
     SLAM.Shutdown();
 
     // Tracking time statistics
-    // 统计追踪部分，计算中位数　总数　平均数
-    // 对所有帧的追踪时间进行一个排序
     sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
     for(int ni=0; ni<nImages; ni++)
@@ -150,7 +145,6 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    // 保存整个相机的位姿轨迹
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");    
 
     return 0;

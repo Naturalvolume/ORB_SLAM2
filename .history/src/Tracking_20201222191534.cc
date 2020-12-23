@@ -235,6 +235,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
     return mCurrentFrame.mTcw.clone();
 }
 
+
 cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp, const cv::Mat &imSem)
 {
     mImGray = im;
@@ -253,18 +254,14 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp,
         else
             cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
     }
-    // 若状态未初始化　或　当前获取地图是第一帧，那么就进行初始化
+
     if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET)
-        //　 mCurrentFrame　对当前帧进行处理，获取ORB特征　尺度信息
-        // Frame(灰度图，时间戳，ORB特征，DBOW2字典，mk标定矩阵，mDistCoef畸变参数，mbf立体视觉的baseline x，mThDepth可靠点的距离阈值)
         mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth, imSem);
     else
         mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth, imSem);
-    // 追踪，初始化，特征匹配
+
     Track();
-    // mTcw是位姿  
-    // clone是cv::Mat特有的方法.
-    // 实现的就是完全拷贝, 把数据完全拷贝而不共享数据.
+
     return mCurrentFrame.mTcw.clone();
 }
 

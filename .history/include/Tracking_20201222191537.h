@@ -58,20 +58,17 @@ public:
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
-    // 处理输入的图片，提取特征　和　立体匹配
     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
     cv::Mat GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const double &timestamp);
     cv::Mat GrabImageMonocular(const cv::Mat &im, const double &timestamp, const cv::Mat &imSem);
 
-    // 设置局部地图　局部闭环检测　视图指针
     void SetLocalMapper(LocalMapping* pLocalMapper);
     void SetLoopClosing(LoopClosing* pLoopClosing);
     void SetViewer(Viewer* pViewer);
 
     // Load new settings
     // The focal lenght should be similar or scale prediction will fail when projecting points
-    // Modify MapPoint::PredictScale to take into account focal lenght
-    // 把焦距考虑进去改变MapPoint的scale
+    // TODO: Modify MapPoint::PredictScale to take into account focal lenght
     void ChangeCalibration(const string &strSettingPath);
 
     // Use this function if you have deactivated local mapping and you only want to localize the camera.
@@ -81,7 +78,6 @@ public:
 public:
 
     // Tracking states
-    // 设置追踪的状态
     enum eTrackingState{
         SYSTEM_NOT_READY=-1,
         NO_IMAGES_YET=0,
@@ -109,7 +105,6 @@ public:
 
     // Lists used to recover the full camera trajectory at the end of the execution.
     // Basically we store the reference keyframe for each frame and its relative transformation
-    // 保存整个摄像头的位姿
     list<cv::Mat> mlRelativeFramePoses;
     list<KeyFrame*> mlpReferences;
     list<double> mlFrameTimes;

@@ -73,17 +73,13 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     cout << "Vocabulary loaded!" << endl << endl;
 
     //Create KeyFrame Database
-    // 创建关键帧数据库
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
     //Create the Map
-    // 创建地图
     mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
-    // 创建视图
     mpFrameDrawer = new FrameDrawer(mpMap);
-    // 创建画图器
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     //Initialize the Tracking thread

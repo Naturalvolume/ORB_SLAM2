@@ -133,12 +133,9 @@ int main(int argc, char **argv)
     }
 
     // Stop all threads
-    // 追踪完所有图片，关闭线程
     SLAM.Shutdown();
 
     // Tracking time statistics
-    // 统计追踪部分，计算中位数　总数　平均数
-    // 对所有帧的追踪时间进行一个排序
     sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
     for(int ni=0; ni<nImages; ni++)
@@ -150,7 +147,6 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    // 保存整个相机的位姿轨迹
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");    
 
     return 0;
@@ -391,7 +387,7 @@ void LoadMask(const string &strFilenamesMask, cv::Mat &imMask)
     }
 
     // // Display the img_mask
-    // cv::imshow("Segmentation Mask", imgLabel);
+    cv::imshow("Segmentation Mask", imgLabel);
     // int i = 0;
     // for(int j = 0; j < 5000; j++) {
     //     i++;

@@ -37,15 +37,11 @@ public:
     MapDrawer(Map* pMap, const string &strSettingPath);
 
     Map* mpMap;
-    // 画点云
+
     void DrawMapPoints();
-    // 化关键帧
     void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph);
-    // 画当前相机采集的图片
     void DrawCurrentCamera(pangolin::OpenGlMatrix &Twc);
-    // 设置当前相机位姿
     void SetCurrentCameraPose(const cv::Mat &Tcw);
-    // 设置参考帧
     void SetReferenceKeyFrame(KeyFrame *pKF);
     void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
 

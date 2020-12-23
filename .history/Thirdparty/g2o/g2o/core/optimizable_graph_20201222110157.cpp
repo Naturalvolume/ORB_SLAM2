@@ -223,6 +223,7 @@ namespace g2o {
 
   OptimizableGraph::Edge* OptimizableGraph::Edge::clone() const
   {
+    // TODO
     return 0;
   }
 

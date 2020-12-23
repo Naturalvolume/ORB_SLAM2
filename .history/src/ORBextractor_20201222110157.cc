@@ -535,7 +535,7 @@ void ExtractorNode::DivideNode(ExtractorNode &n1, ExtractorNode &n2, ExtractorNo
         n4.bNoMore = true;
 
 }
-// 计算用fast选出来的特征点是否合格
+
 vector<cv::KeyPoint> ORBextractor::DistributeOctTree(const vector<cv::KeyPoint>& vToDistributeKeys, const int &minX,
                                        const int &maxX, const int &minY, const int &maxY, const int &N, const int &level)
 {
@@ -764,14 +764,12 @@ vector<cv::KeyPoint> ORBextractor::DistributeOctTree(const vector<cv::KeyPoint>&
 
 void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoints)
 {
-    // 一共计算nlevel个尺度的关键点
     allKeypoints.resize(nlevels);
-    // 窗口的大小
+
     const float W = 30;
-    // 对每个尺度计算它的关键点
+
     for (int level = 0; level < nlevels; ++level)
     {
-        // 计算边界，在这个边界内计算fast关键点
         const int minBorderX = EDGE_THRESHOLD-3;
         const int minBorderY = minBorderX;
         const int maxBorderX = mvImagePyramid[level].cols-EDGE_THRESHOLD+3;
@@ -779,41 +777,38 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
 
         vector<cv::KeyPoint> vToDistributeKeys;
         vToDistributeKeys.reserve(nfeatures*10);
-        // 计算宽度和高度
+
         const float width = (maxBorderX-minBorderX);
         const float height = (maxBorderY-minBorderY);
-        // 计算有多少个窗口
+
         const int nCols = width/W;
         const int nRows = height/W;
-        // 计算每个窗口的大小
         const int wCell = ceil(width/nCols);
         const int hCell = ceil(height/nRows);
-        // 对每个窗口进行遍历
+
         for(int i=0; i<nRows; i++)
         {
             const float iniY =minBorderY+i*hCell;
             float maxY = iniY+hCell+6;
-            // 已经出了图片的有效区域
+
             if(iniY>=maxBorderY-3)
                 continue;
-            // 超出边界的话就计算最宽的边界
             if(maxY>maxBorderY)
                 maxY = maxBorderY;
 
             for(int j=0; j<nCols; j++)
             {
-                // 计算每列的位置
                 const float iniX =minBorderX+j*wCell;
                 float maxX = iniX+wCell+6;
                 if(iniX>=maxBorderX-6)
                     continue;
                 if(maxX>maxBorderX)
                     maxX = maxBorderX;
-                // 计算fast关键点
+
                 vector<cv::KeyPoint> vKeysCell;
                 FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
                      vKeysCell,iniThFAST,true);
-                // 若找到的关键点不为空，就加入到vToDistributeKeys
+
                 if(vKeysCell.empty())
                 {
                     FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
@@ -824,7 +819,6 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
                 {
                     for(vector<cv::KeyPoint>::iterator vit=vKeysCell.begin(); vit!=vKeysCell.end();vit++)
                     {
-                        // 计算实际的位置
                         (*vit).pt.x+=j*wCell;
                         (*vit).pt.y+=i*hCell;
                         vToDistributeKeys.push_back(*vit);
@@ -835,12 +829,11 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
         }
 
         vector<KeyPoint> & keypoints = allKeypoints[level];
-        // 至少保留N个特征点
         keypoints.reserve(nfeatures);
-        // 根据harris角点的score进行排序，保留正确的
+
         keypoints = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
                                       minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
-        // patch_size是31
+
         const int scaledPatchSize = PATCH_SIZE*mvScaleFactor[level];
 
         // Add border to coordinates and scale information
@@ -855,7 +848,6 @@ void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoin
     }
 
     // compute orientations
-    // 计算nlevels个尺度下各个关键点的方向
     for (int level = 0; level < nlevels; ++level)
         computeOrientation(mvImagePyramid[level], allKeypoints[level], umax);
 }
@@ -1048,23 +1040,19 @@ static void computeDescriptors(const Mat& image, vector<KeyPoint>& keypoints, Ma
         computeOrbDescriptor(keypoints[i], image, &pattern[0], descriptors.ptr((int)i));
 }
 
-// 重载运算符()
 void ORBextractor::operator()( InputArray _image, InputArray _mask, vector<KeyPoint>& _keypoints,
                       OutputArray _descriptors)
 { 
     if(_image.empty())
         return;
-    // 获取图片信息赋值给mat类型的图片
+
     Mat image = _image.getMat();
     assert(image.type() == CV_8UC1 );
 
     // Pre-compute the scale pyramid
-    // 计算尺度金字塔
     ComputePyramid(image);
 
-    // 保存所有关键点
     vector < vector<KeyPoint> > allKeypoints;
-    // 计算ＦＡＳＴ关键点
     ComputeKeyPointsOctTree(allKeypoints);
     //ComputeKeyPointsOld(allKeypoints);
 
@@ -1085,8 +1073,6 @@ void ORBextractor::operator()( InputArray _image, InputArray _mask, vector<KeyPo
     _keypoints.reserve(nkeypoints);
 
     int offset = 0;
-    // 一共八层金字塔，随着level越来越大，scale factor越来越大，图片越来越小
-    // 当恢复金字塔关键点的原图坐标时，就把它乘以scale factor
     for (int level = 0; level < nlevels; ++level)
     {
         vector<KeyPoint>& keypoints = allKeypoints[level];
@@ -1097,18 +1083,15 @@ void ORBextractor::operator()( InputArray _image, InputArray _mask, vector<KeyPo
 
         // preprocess the resized image
         Mat workingMat = mvImagePyramid[level].clone();
-        // 使用高斯模糊，为了计算brief的时候去噪
         GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);
 
         // Compute the descriptors
-        // 计算brief描述子，采用的是高斯分布取点
         Mat desc = descriptors.rowRange(offset, offset + nkeypointsLevel);
         computeDescriptors(workingMat, keypoints, desc, pattern);
 
         offset += nkeypointsLevel;
 
         // Scale keypoint coordinates
-        // 尺度恢复，恢复关键点原图位置
         if (level != 0)
         {
             float scale = mvScaleFactor[level]; //getScale(level, firstLevel, scaleFactor);
@@ -1123,27 +1106,19 @@ void ORBextractor::operator()( InputArray _image, InputArray _mask, vector<KeyPo
 
 void ORBextractor::ComputePyramid(cv::Mat image)
 {
-    // 计算nlevel个尺度的图片
     for (int level = 0; level < nlevels; ++level)
     {
-        // 获取尺度
         float scale = mvInvScaleFactor[level];
-        // 计算当前尺度下图片的大小
         Size sz(cvRound((float)image.cols*scale), cvRound((float)image.rows*scale));
         Size wholeSize(sz.width + EDGE_THRESHOLD*2, sz.height + EDGE_THRESHOLD*2);
         Mat temp(wholeSize, image.type()), masktemp;
-        // 图片初始化
         mvImagePyramid[level] = temp(Rect(EDGE_THRESHOLD, EDGE_THRESHOLD, sz.width, sz.height));
 
         // Compute the resized image
-        // 计算图片金字塔在该尺度下的金字塔
         if( level != 0 )
         {
-            // 对图片进行尺度变化
-            // 在这里一般是把更清晰的图片变化城更加模糊的图片
-            // 在这里，尺度值小于１，所以才会命名为mvinescale，就是scale的倒数
             resize(mvImagePyramid[level-1], mvImagePyramid[level], sz, 0, 0, INTER_LINEAR);
-            //　这里主要是为了方便做一些卷积计算来补充边界 
+
             copyMakeBorder(mvImagePyramid[level], temp, EDGE_THRESHOLD, EDGE_THRESHOLD, EDGE_THRESHOLD, EDGE_THRESHOLD,
                            BORDER_REFLECT_101+BORDER_ISOLATED);            
         }

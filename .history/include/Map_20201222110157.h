@@ -39,20 +39,15 @@ class Map
 {
 public:
     Map();
-    // 添加关键帧
+
     void AddKeyFrame(KeyFrame* pKF);
-    // 添加点云
     void AddMapPoint(MapPoint* pMP);
-    // 去掉点云
     void EraseMapPoint(MapPoint* pMP);
-    // 去掉关键帧
     void EraseKeyFrame(KeyFrame* pKF);
-    // 设置参考点云
     void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
     void InformNewBigChange();
     int GetLastBigChangeIdx();
 
-    // 获取所有关键帧　点云　参考点云
     std::vector<KeyFrame*> GetAllKeyFrames();
     std::vector<MapPoint*> GetAllMapPoints();
     std::vector<MapPoint*> GetReferenceMapPoints();
@@ -66,8 +61,6 @@ public:
 
     vector<KeyFrame*> mvpKeyFrameOrigins;
 
-    // 多线程
-    // 避免两个线程同时操作点
     std::mutex mMutexMapUpdate;
 
     // This avoid that two points are created simultaneously in separate threads (id conflict)
