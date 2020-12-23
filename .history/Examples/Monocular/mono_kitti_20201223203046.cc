@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 #endif
         // 12.21
         cv::Mat imSem(im.rows, im.cols, CV_32SC1);
-        LoadMask(vstrSemanticFile[ni], im);
+        // LoadMask(vstrSemanticFile[ni], im);
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe, imSem);
 
@@ -202,7 +202,7 @@ void LoadMask(const string &strFilenamesMask, cv::Mat &im)
     // count代表图片的行数
     int count = 0;
     // ｉｍｇＬａｂｅｌ是为了展示
-    // cv::Mat imgLabel(im.rows,im.cols,CV_8UC3); // for display
+    cv::Mat imgLabel(im.rows,im.cols,CV_8UC3); // for display
     while(!file_mask.eof())
     {
         string s;
@@ -216,7 +216,7 @@ void LoadMask(const string &strFilenamesMask, cv::Mat &im)
             for(int i = 0; i < im.cols; ++i){
                 ss >> tmp;
                 if (tmp!=0){
-                    im.at<uchar>(count,i) = 0;
+                    im.at<cv::Vec3b>(count,i) = cv::Vec3b(0,0,255);
                     // 查看到属于某个实例的像素时，
                     // 给这个像素点对应的实例图片位置处赋值
                     // im.at<int>(count,i) = tmp;

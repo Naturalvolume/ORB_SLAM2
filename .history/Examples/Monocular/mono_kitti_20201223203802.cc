@@ -216,7 +216,7 @@ void LoadMask(const string &strFilenamesMask, cv::Mat &im)
             for(int i = 0; i < im.cols; ++i){
                 ss >> tmp;
                 if (tmp!=0){
-                    im.at<uchar>(count,i) = 0;
+                    im.at<uchar>(count,i) = 128;
                     // 查看到属于某个实例的像素时，
                     // 给这个像素点对应的实例图片位置处赋值
                     // im.at<int>(count,i) = tmp;
