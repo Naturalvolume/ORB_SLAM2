@@ -120,9 +120,7 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");  
-    // SaveTrajectoryKITTI不能用到单目相机中？？？？
-    // SLAM.SaveTrajectoryKITTI("KITTI.txt");  
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");    
 
     return 0;
 }
@@ -146,7 +144,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilena
         }
     }
 
-    string strPrefixLeft = strPathToSequence + "/image_1/";
+    string strPrefixLeft = strPathToSequence + "/image_0/";
 
     const int nTimes = vTimestamps.size();
     vstrImageFilenames.resize(nTimes);

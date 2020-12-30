@@ -121,8 +121,7 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");  
-    // SaveTrajectoryKITTI不能用到单目相机中？？？？
-    // SLAM.SaveTrajectoryKITTI("KITTI.txt");  
+    SLAM.SaveTrajectoryKITTI("KITTI.txt")  
 
     return 0;
 }

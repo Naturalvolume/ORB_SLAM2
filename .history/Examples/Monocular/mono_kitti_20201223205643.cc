@@ -120,9 +120,7 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");  
-    // SaveTrajectoryKITTI不能用到单目相机中？？？？
-    // SLAM.SaveTrajectoryKITTI("KITTI.txt");  
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");    
 
     return 0;
 }
