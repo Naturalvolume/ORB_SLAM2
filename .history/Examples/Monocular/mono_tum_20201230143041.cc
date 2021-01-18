@@ -31,7 +31,7 @@
 
 using namespace std;
 
-void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<string> &vstrSemanticFile,
+void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,　vector<string> &vstrSemanticFile,
                 vector<double> &vTimestamps);
 void LoadMask(const string &strFilenamesMask, cv::Mat &imMask);
 
@@ -84,9 +84,9 @@ int main(int argc, char **argv)
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
-         cv::Mat imSem(im.rows, im.cols, CV_32SC1);
+
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe, imSem);
+        SLAM.TrackMonocular(im,tframe);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -133,7 +133,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
 {
     ifstream f;
     f.open(strFile.c_str());
-    cout << "start handle image" << strFile << endl;
+
     // skip first three lines
     string s0;
     getline(f,s0);
@@ -144,13 +144,11 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
     {
         string s;
         getline(f,s);
-        // cout << "s:" << s << endl;
         if(!s.empty())
         {
             stringstream ss;
             ss << s;
             double t;
-            // cout << t << endl;
             string sRGB;
             ss >> t;
             // 时间戳

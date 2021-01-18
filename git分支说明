@@ -1,0 +1,7 @@
+git branch	列出已有分支
+git checkout -b branchName 　	建立新分支branchName，并切换
+git checkout branchName		切换到已建立分支branchName
+
+已建立分支
+- master 主分支，本来的orb-slam
+- segment 语义分割分支　仅增加了语义分割部分

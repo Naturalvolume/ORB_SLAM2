@@ -150,13 +150,14 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             stringstream ss;
             ss << s;
             double t;
-            // cout << t << endl;
+            cout << t << endl;
             string sRGB;
             ss >> t;
             // 时间戳
             vTimestamps.push_back(t);
             string segFile = "segment/";
             string seg = segFile + to_string(t) + ".txt";
+            cout << seg << endl;
             vstrSemanticFile.push_back(seg);
             ss >> sRGB;
             vstrImageFilenames.push_back(sRGB);

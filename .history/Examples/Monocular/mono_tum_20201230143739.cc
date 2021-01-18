@@ -133,7 +133,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
 {
     ifstream f;
     f.open(strFile.c_str());
-    cout << "start handle image" << strFile << endl;
+
     // skip first three lines
     string s0;
     getline(f,s0);
@@ -144,13 +144,11 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
     {
         string s;
         getline(f,s);
-        // cout << "s:" << s << endl;
         if(!s.empty())
         {
             stringstream ss;
             ss << s;
             double t;
-            // cout << t << endl;
             string sRGB;
             ss >> t;
             // 时间戳
